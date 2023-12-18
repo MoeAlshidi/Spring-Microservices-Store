@@ -22,7 +22,7 @@ public class OrderService implements IOrderService{
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
     @Override
     public Optional<RetrieveOrderDTO> placeOrder(CreateOrderRequest request) {
         if(!request.itemsList().isEmpty()){
@@ -43,8 +43,8 @@ public class OrderService implements IOrderService{
             order.setOrderLineItemsList(collect);
 
             // Check if items in stock using Inventory Service
-            InventoryResponse[] results = webClient.get()
-                    .uri("http://localhost:8082/api/v1/inventory",
+            InventoryResponse[] results = webClientBuilder.build().get()
+                    .uri("http://inventory-service/api/v1/inventory",
                             uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)
